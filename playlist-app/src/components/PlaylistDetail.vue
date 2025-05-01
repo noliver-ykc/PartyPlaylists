@@ -102,9 +102,12 @@ const deleteRequest = async (id: string) => {
 }
 
 onMounted(async () => {
-  const { data, error } = await supabase.from('playlists').select('*')
-  const found = data?.find((p: any) => p.id === playlistId)
-  if (found) playlist.value = found
+  const { data, error } = await supabase.from('playlists').select('*').eq('id', playlistId).single()
+  if (error) {
+    console.error('Error fetching playlist:', error.message)
+  } else {
+    playlist.value = data
+  }
   loading.value = false
   await fetchSongs()
 })
