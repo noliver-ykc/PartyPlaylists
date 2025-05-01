@@ -19,11 +19,12 @@ import { supabase } from '@/lib/supabase'
 
 const playlists = ref<any[]>([])
 const loading = ref(true)
+const errorMessage = ref<string | null>(null)
 
 const fetchPlaylists = async () => {
   const { data, error } = await supabase.from('playlists').select('*').order('created_at', { ascending: false })
   if (error) {
-    alert('Error fetching playlists: ' + error.message)
+    errorMessage.value = 'Error fetching playlists: ' + error.message
   } else {
     playlists.value = data
   }
