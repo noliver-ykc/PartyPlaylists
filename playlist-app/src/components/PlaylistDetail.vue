@@ -9,7 +9,13 @@
     />
     <p>{{ playlist.description }}</p>
 
-    <SongRequestForm :playlistId="playlist.id" @request-submitted="fetchSongs" />
+    <SongRequestForm
+      :playlistId="playlist.id"
+      @request-submitted="fetchSongs"
+      @request-started="isSubmitting = true"
+      @request-ended="isSubmitting = false"
+    />
+
   </div>
   <div v-else>
     <p>Playlist not found.</p>
@@ -34,7 +40,7 @@
 
           <div class="action-menu-wrapper">
             <img
-              :src="getMenuIcon(song.id)"
+              src="/icons/inactive-select-buttons.svg"
               class="action-icon"
               @click="toggleMenu(song.id)"
             />
@@ -50,6 +56,12 @@
       </li>
     </ul>
   </div>
+  <div v-if="isSubmitting" class="loading-overlay">
+  <div class="loading-dots">
+    Loading<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span>
+  </div>
+</div>
+
 </template>
 
 <script setup lang="ts">
@@ -111,6 +123,9 @@ onMounted(async () => {
   loading.value = false
   await fetchSongs()
 })
+
+const isSubmitting = ref(false)
+
 </script>
 
 <style scoped>
@@ -140,40 +155,16 @@ onMounted(async () => {
   border-radius: 4px;
 }
 
-.meta small {
-  color: #666;
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .playlist-cover-id {
+    object-fit: cover;
+    width: 285px;
+    height: 288px;
+    border-radius: 7px;
+  }
+
 }
 
-.action-menu-wrapper {
-  margin-left: auto;
-  position: relative;
-}
 
-.action-icon {
-  cursor: pointer;
-}
-
-.popup-menu {
-  position: absolute;
-  top: 100%;
-  right: 0;
-  background: white;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  padding: 0.5rem;
-  z-index: 10;
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-}
-
-.popup-menu a,
-.popup-menu button {
-  font-size: 0.9rem;
-  background: none;
-  border: none;
-  text-align: left;
-  cursor: pointer;
-}
 </style>
