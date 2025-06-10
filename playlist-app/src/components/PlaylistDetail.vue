@@ -40,7 +40,7 @@
 
           <div class="action-menu-wrapper">
             <img
-              :src="getMenuIcon(song.id)"
+              src="/icons/inactive-select-buttons.svg"
               class="action-icon"
               @click="toggleMenu(song.id)"
             />
@@ -155,39 +155,16 @@ const isSubmitting = ref(false)
   border-radius: 4px;
 }
 
-.meta small {
-  color: #666;
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .playlist-cover-id {
+    object-fit: cover;
+    width: 285px;
+    height: 288px;
+    border-radius: 7px;
+  }
+
 }
 
-.action-menu-wrapper {
-  margin-left: auto;
-  position: relative;
-}
 
-.action-icon {
-  cursor: pointer;
-}
-
-.popup-menu {
-  position: absolute;
-  top: 100%;
-  right: 0;
-  background: white;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  padding: 0.5rem;
-  z-index: 10;
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-}
-
-.popup-menu a,
-.popup-menu button {
-  font-size: 0.9rem;
-  border: none;
-  text-align: left;
-  cursor: pointer;
-}
 </style>
