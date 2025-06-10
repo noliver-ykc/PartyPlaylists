@@ -9,7 +9,13 @@
     />
     <p>{{ playlist.description }}</p>
 
-    <SongRequestForm :playlistId="playlist.id" @request-submitted="fetchSongs" />
+    <SongRequestForm
+      :playlistId="playlist.id"
+      @request-submitted="fetchSongs"
+      @request-started="isSubmitting = true"
+      @request-ended="isSubmitting = false"
+    />
+
   </div>
   <div v-else>
     <p>Playlist not found.</p>
@@ -50,6 +56,12 @@
       </li>
     </ul>
   </div>
+  <div v-if="isSubmitting" class="loading-overlay">
+  <div class="loading-dots">
+    Loading<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span>
+  </div>
+</div>
+
 </template>
 
 <script setup lang="ts">
@@ -111,6 +123,9 @@ onMounted(async () => {
   loading.value = false
   await fetchSongs()
 })
+
+const isSubmitting = ref(false)
+
 </script>
 
 <style scoped>
@@ -171,7 +186,6 @@ onMounted(async () => {
 .popup-menu a,
 .popup-menu button {
   font-size: 0.9rem;
-  background: none;
   border: none;
   text-align: left;
   cursor: pointer;

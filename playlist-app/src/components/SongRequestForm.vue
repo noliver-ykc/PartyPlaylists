@@ -49,12 +49,14 @@ import { supabase } from '@/lib/supabase'
 import { getSpotifyAccessToken } from '@/lib/spotify'
 
 const props = defineProps<{ playlistId: string }>()
-const emit = defineEmits(['request-submitted'])
+const emit = defineEmits(['request-submitted', 'request-started', 'request-ended'])
 
 const requestedBy = ref('')
 const showNameError = ref(false)
 const searchQuery = ref('')
 const searchResults = ref<any[]>([])
+
+
 
 const handleSearch = async () => {
   if (searchQuery.value.trim().length < 2) {
@@ -96,6 +98,7 @@ const submitRequest = async (track: any) => {
   }
 
   showNameError.value = false
+  emit('request-started')
 
   const appleMusicUrl = await getAppleMusicUrl(track.external_urls.spotify)
 
@@ -112,12 +115,13 @@ const submitRequest = async (track: any) => {
       status: 'requested'
     }
   ])
+  emit('request-ended')
 
   if (error) {
     alert('Failed to submit request: ' + error.message)
   } else {
-    alert('Song request submitted!')
     emit('request-submitted')
+    requestedBy.value = ''
     searchQuery.value = ''
     searchResults.value = []
   }
