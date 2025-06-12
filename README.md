@@ -1,1 +1,3 @@
 # PartyPlaylists
+
+npm run dev
