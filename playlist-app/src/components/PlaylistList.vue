@@ -75,9 +75,10 @@ onMounted(() => {
 }
 
 h1 {
-  font-size: 2.5rem;
-  margin-bottom: 2.7rem;
+  /* font-size: 2.5rem;
+  margin-bottom: 2.7rem; */
   text-align: left;
+  margin: 0 0 1rem 0;
 }
 
 .playlist-scroll-container {
@@ -165,7 +166,7 @@ h1 {
   }
   h1 {
     font-size: 2.5rem;
-    margin-bottom: 1rem;
+    margin: 1rem 0;
     text-align: left;
   }
 
