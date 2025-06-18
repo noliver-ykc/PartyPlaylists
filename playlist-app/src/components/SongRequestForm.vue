@@ -7,7 +7,7 @@
       </div>
     </div>
 
-    <!-- Your Name input + Search -->
+    <!-- input bars -->
     <div class="input-group">
       <div class="input-wrapper">
         <div class="search-input">
@@ -16,7 +16,7 @@
             placeholder="Your Name"
             :class="{ 'input-error': showNameError }"
           />
-
+        <!-- Search bar with clear icon -->
           <div class="search-bar-wrapper">
             <input
               v-model="searchQuery"
@@ -33,7 +33,7 @@
           </div>
         </div>
 
-        <p v-if="showNameError" class="error-message">name onegaishimasu</p>
+        <p v-if="showNameError" class="error-message">name please 🙇‍♀️</p>
       </div>
     </div>
 
