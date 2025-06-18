@@ -156,7 +156,6 @@ const toggleMenu = (id: string) => {
 }
 
 const deleteRequest = async (id: string) => {
-  if (!confirm('Are you sure you want to delete this request?')) return
   const { error } = await supabase.from('playlist_requests').delete().eq('id', id)
   if (!error) await fetchSongs()
   else alert('Failed to delete request: ' + error.message)
@@ -304,9 +303,7 @@ onBeforeUnmount(() => {
   background: none;
   text-align: left;
   cursor: pointer;
-  /* padding-top: .5rem; */
-  /* border-top: 1px solid black; */
-
+  padding: .5rem;
 }
 
 .popup-menu a:hover, .popup-menu button:hover {

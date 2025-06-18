@@ -8,28 +8,30 @@
     </div>
 
     <!-- Your Name input -->
-    <div class="search-input">
-      <input
-        v-model="requestedBy"
-        placeholder=" Your Name"
-        :class="{ 'input-error': showNameError }"
-      />
-
-      <!-- Search bar with clear icon -->
-      <div class="search-bar-wrapper">
+    <div class="input-group">
+      <div class="search-input">
         <input
-          v-model="searchQuery"
-          placeholder="Search"
-          @input="handleSearch"
+          v-model="requestedBy"
+          placeholder="Your Name"
+          :class="{ 'input-error': showNameError }"
         />
-        <img
-          v-if="searchQuery"
-          src="/icons/delete-text.svg"
-          class="delete-text-icon"
-          alt="Clear"
-          @click="clearSearch"
-        />
+        <!-- Search bar with clear icon -->
+        <div class="search-bar-wrapper">
+          <input
+            v-model="searchQuery"
+            placeholder="Search"
+            @input="handleSearch"
+          />
+          <img
+            v-if="searchQuery"
+            src="/icons/delete-text.svg"
+            class="delete-text-icon"
+            alt="Clear"
+            @click="clearSearch"
+          />
+        </div>
       </div>
+      <p v-if="showNameError" class="error-message">name please 🙇‍♀️</p>
     </div>
 
     <p class="dj-note">
@@ -56,7 +58,6 @@
   </form>
 </template>
 
-
 <script setup lang="ts">
 import { ref } from 'vue'
 import { supabase } from '@/lib/supabase'
@@ -70,8 +71,6 @@ const searchQuery = ref('')
 const searchResults = ref<any[]>([])
 type Artist = { name: string }
 
-
-
 const props = defineProps<{
   playlistId: string
   playlistDescription: string
@@ -84,7 +83,6 @@ const handleSearch = async () => {
   }
 
   const token = await getSpotifyAccessToken()
-
   const res = await fetch(
     `https://api.spotify.com/v1/search?q=${encodeURIComponent(searchQuery.value)}&type=track&limit=10`,
     {
@@ -113,11 +111,11 @@ const getAppleMusicUrl = async (spotifyUrl: string): Promise<string | null> => {
     return null
   }
 }
+
 const submitting = ref(false)
 const submitRequest = async (track: any) => {
   if (!requestedBy.value.trim()) {
     showNameError.value = true
-    alert('Please enter your name before submitting a song.')
     return
   }
 
@@ -152,11 +150,14 @@ const submitRequest = async (track: any) => {
     searchResults.value = []
   }
 }
-
 </script>
 
 <style scoped>
-
+.input-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 
 .search-input {
   display: flex;
@@ -164,20 +165,38 @@ const submitRequest = async (track: any) => {
   gap: 0.5rem;
   justify-content: center;
   align-items: center;
-  flex-wrap: nowrap; /* 👈 prevent stacking */
+  flex-wrap: nowrap;
 }
 
-
 .search-input input {
-  width: 1.5fr;
+  width: 1fr;
   height: 28px;
-  font-size: 14px;
+  font-size: 16px;
   border: 1px solid #ccc;
   border-radius: 6px;
   background-color: #fff;
   color: #9a9a9a;
-  padding-left: 15px; /* 👈 creates space for icon */
+  padding-left: 15px;
+}
 
+.input-error {
+  border: 1px solid #D75454 !important;
+  color: #D75454 !important;
+}
+
+.input-error::placeholder {
+  color: #D75454 !important;
+}
+
+.error-message {
+  color: #D75454;
+  font-size: 0.75rem;
+  padding-left: 2.2rem;
+  margin-top: 4px;
+  text-align: left;
+  width: 100%;
+  max-width: 400px;
+  font-weight: bold;
 }
 
 .song-details-ui {
@@ -188,16 +207,15 @@ const submitRequest = async (track: any) => {
 
 .search-bar-wrapper {
   position: relative;
-  /* flex: 1; */
 }
 
 .search-bar-wrapper input {
-  width: 1.5fr;
+  width: 1fr;
   height: 28px;
   background-color: #fff;
   font-weight: 500;
-  font-size: 14px;
-  padding-left: 30px; /* 👈 creates space for icon */
+  font-size: 16px;
+  padding-left: 30px;
   border: 1px solid #ccc;
   border-radius: 6px;
   color: #333;
@@ -217,7 +235,6 @@ const submitRequest = async (track: any) => {
   pointer-events: none;
 }
 
-
 .search-results {
   background-color: #f5f5f5;
   border-radius: 8px;
@@ -226,6 +243,7 @@ const submitRequest = async (track: any) => {
   max-height: 200px;
   overflow-y: auto;
 }
+
 .delete-text-icon {
   position: absolute;
   right: 10px;
@@ -252,6 +270,7 @@ const submitRequest = async (track: any) => {
   object-fit: cover;
   border-radius: 4px;
 }
+
 .search-result {
   display: flex;
   align-items: center;
@@ -273,10 +292,12 @@ const submitRequest = async (track: any) => {
   margin-left: 0.5rem;
   cursor: pointer;
 }
+
 .add-song-btn img {
   width: 14px;
   height: 14px;
 }
+
 /* Desktop */
 @media (min-width: 769px) {
   .dj-note {
@@ -287,17 +308,16 @@ const submitRequest = async (track: any) => {
 /* Mobile */
 @media (max-width: 768px) {
   .dj-note {
-  font-size: 0.85rem;
-  margin-top: 0.75rem;
-  text-align: left;
-  color: #888;
-  padding: 0 0.5rem;
-}
+    font-size: 0.85rem;
+    margin-top: 0.75rem;
+    text-align: left;
+    color: #888;
+    padding: 0 0.5rem;
+  }
 
-.dj-note span {
-  font-weight: bold;
-  color: #6c63ff;
+  .dj-note span {
+    font-weight: bold;
+    color: #6c63ff;
+  }
 }
-}
-
 </style>
