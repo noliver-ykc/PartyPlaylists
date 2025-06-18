@@ -19,7 +19,7 @@
       <div class="search-bar-wrapper">
         <input
           v-model="searchQuery"
-          placeholder="　 Search"
+          placeholder="Search"
           @input="handleSearch"
         />
         <img
@@ -27,10 +27,14 @@
           src="/icons/delete-text.svg"
           class="delete-text-icon"
           alt="Clear"
-          @click="searchQuery = ''"
+          @click="clearSearch"
         />
       </div>
     </div>
+
+    <p class="dj-note">
+      <span>From the DJ:</span> {{ playlistDescription }}
+    </p>
 
     <!-- Search Results -->
     <div v-if="searchResults.length > 0" class="search-results">
@@ -42,7 +46,7 @@
         <img :src="track.album.images[2]?.url" class="search-result-art" alt="Album Art" />
         <div class="search-result-text">
           <p>{{ track.name }}</p>
-          <small>{{ track.artists.map(a => a.name).join(', ') }}</small>
+          <small class="song-details-ui">{{ track.artists.map(a => a.name).join(', ') }}</small>
         </div>
         <button @click="submitRequest(track)" class="add-song-btn">
           <img src="/icons/add-song-button.svg" alt="Add Song" />
@@ -58,7 +62,6 @@ import { ref } from 'vue'
 import { supabase } from '@/lib/supabase'
 import { getSpotifyAccessToken } from '@/lib/spotify'
 
-const props = defineProps<{ playlistId: string }>()
 const emit = defineEmits(['request-submitted', 'request-started', 'request-ended'])
 
 const requestedBy = ref('')
@@ -67,6 +70,10 @@ const searchQuery = ref('')
 const searchResults = ref<any[]>([])
 
 
+const props = defineProps<{
+  playlistId: string
+  playlistDescription: string
+}>()
 
 const handleSearch = async () => {
   if (searchQuery.value.trim().length < 2) {
@@ -89,6 +96,10 @@ const handleSearch = async () => {
   searchResults.value = data.tracks?.items || []
 }
 
+const clearSearch = () => {
+  searchQuery.value = ''
+  searchResults.value = []
+}
 
 const getAppleMusicUrl = async (spotifyUrl: string): Promise<string | null> => {
   try {
@@ -135,7 +146,6 @@ const submitRequest = async (track: any) => {
     alert('Failed to submit request: ' + error.message)
   } else {
     emit('request-submitted')
-    requestedBy.value = ''
     searchQuery.value = ''
     searchResults.value = []
   }
@@ -144,17 +154,7 @@ const submitRequest = async (track: any) => {
 </script>
 
 <style scoped>
-/* .search-input {
-  display: flex;
-  gap: 0.5rem;
-  align-items: flex-start;
-  flex-wrap: wrap;
-}
 
-.search-input input {
-  flex: 1;
-  padding: 0.4rem;
-} */
 
 .search-input {
   display: flex;
@@ -167,9 +167,8 @@ const submitRequest = async (track: any) => {
 
 
 .search-input input {
-  width: 173px;
+  width: 1.5fr;
   height: 28px;
-  /* padding: 0 0.5rem; */
   font-size: 14px;
   border: 1px solid #ccc;
   border-radius: 6px;
@@ -179,23 +178,28 @@ const submitRequest = async (track: any) => {
 
 }
 
+.song-details-ui {
+  color: #7C7C7C;
+  font-weight: 500;
+  font-size: .75rem;
+}
+
 .search-bar-wrapper {
   position: relative;
-  flex: 1;
+  /* flex: 1; */
 }
 
 .search-bar-wrapper input {
-  width: 173px;
+  width: 1.5fr;
   height: 28px;
   background-color: #fff;
   font-weight: 500;
   font-size: 14px;
-  padding-left: 15px; /* 👈 creates space for icon */
+  padding-left: 30px; /* 👈 creates space for icon */
   border: 1px solid #ccc;
   border-radius: 6px;
   color: #333;
 }
-
 
 .search-bar-wrapper::before {
   content: '';
@@ -271,6 +275,27 @@ const submitRequest = async (track: any) => {
   width: 14px;
   height: 14px;
 }
+/* Desktop */
+@media (min-width: 769px) {
+  .dj-note {
+    display: none;
+  }
+}
 
+/* Mobile */
+@media (max-width: 768px) {
+  .dj-note {
+  font-size: 0.85rem;
+  margin-top: 0.75rem;
+  text-align: left;
+  color: #888;
+  padding: 0 0.5rem;
+}
+
+.dj-note span {
+  font-weight: bold;
+  color: #6c63ff;
+}
+}
 
 </style>

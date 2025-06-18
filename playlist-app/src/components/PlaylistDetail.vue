@@ -31,13 +31,14 @@
           <h1 class="playlist-title mobile-title">{{ playlist.title }}</h1>
         </div>
         <p class="description"><span>From the DJ:</span> {{ playlist.description }}</p>
-
         <SongRequestForm
           :playlistId="playlist.id"
+          :playlistDescription="playlist.description"
           @request-submitted="fetchSongs"
           @request-started="isSubmitting = true"
           @request-ended="isSubmitting = false"
         />
+
 
       </div>
 
@@ -63,19 +64,18 @@
               <img :src="song.album_cover_url" class="thumb" alt="Album cover" />
               <div class="song-text">
                 <small class="truncate song-title">{{ song.title }}</small>
-                <small class="truncate"><i>{{ song.album_name }}</i></small>
+                <small class="truncate artist song-details-ui "><i>{{ song.artist }}</i></small>
               </div>
             </div>
-
-            <!-- Artist -->
-            <span class="artist">{{ song.artist }}</span>
+             <!-- Artist -->
+            <span class="desktop-artist song-details-ui ">{{ song.artist }}</span>
 
             <!-- Added By + Menu -->
             <div class="added-by">
-              <span>{{ song.requested_by }}</span>
-              <div class="action-menu-wrapper">
+              <span class="song-details-ui" >{{ song.requested_by }}</span>
+              <div class="action-menu-wrapper" :ref="el => menuRefs[song.id] = el">
                 <img
-                  src="/icons/inactive-select-buttons.svg"
+                  :src="openMenuId === song.id ? '/icons/active-select-buttons.svg' : '/icons/inactive-select-buttons.svg'"
                   class="action-icon"
                   @click="toggleMenu(song.id)"
                 />
@@ -101,7 +101,7 @@
 
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, onBeforeUnmount, reactive } from 'vue'
 import { supabase } from '@/lib/supabase'
 import { useRoute } from 'vue-router'
 import SongRequestForm from './SongRequestForm.vue'
@@ -114,6 +114,23 @@ const songRequests = ref<any[]>([])
 const openMenuId = ref<string | null>(null)
 const hoveredSongId = ref<string | null>(null)
 const isSubmitting = ref(false)
+
+const menuRefs = reactive<Record<string, HTMLElement | null>>({})
+
+const handleClickOutside = (event: MouseEvent) => {
+  if (
+    openMenuId.value &&
+    menuRefs[openMenuId.value] &&
+    !menuRefs[openMenuId.value]?.contains(event.target as Node)
+  ) {
+    openMenuId.value = null
+  }
+}
+
+const handleScroll = () => {
+  openMenuId.value = null
+}
+
 
 const fetchSongs = async () => {
   const { data, error } = await supabase
@@ -146,11 +163,25 @@ const formatDate = (isoString: string): string => {
 }
 
 onMounted(async () => {
-  const { data, error } = await supabase.from('playlists').select('*').eq('id', playlistId).single()
+  window.addEventListener('click', handleClickOutside)
+  window.addEventListener('scroll', handleScroll, true)
+
+  const { data, error } = await supabase
+    .from('playlists')
+    .select('*')
+    .eq('id', playlistId)
+    .single()
+
   if (!error) playlist.value = data
   loading.value = false
   await fetchSongs()
 })
+
+onBeforeUnmount(() => {
+  window.removeEventListener('click', handleClickOutside)
+  window.removeEventListener('scroll', handleScroll, true)
+})
+
 </script>
 
 <style scoped>
@@ -175,10 +206,6 @@ onMounted(async () => {
   font-weight: bold;
 }
 
-/* .main-column {
-  flex: 1;
-} */
-
 .right-column {
   flex: 2;
   width: 100%;
@@ -189,16 +216,6 @@ onMounted(async () => {
   width: 510px;
   height: 271px;
   border-radius: 7px;
-}
-
-.description {
-  font-size: 0.875rem;
-  margin-bottom: 1rem;
-  text-align: left;
-}
-.description span {
-  color: #6c63ff;
-  font-weight: bold;
 }
 
 .close-date {
@@ -218,26 +235,13 @@ onMounted(async () => {
   display: grid;
   grid-template-columns: 60% 20% 20%;
   align-items: center;
-  /* gap: 1rem; */
   flex-grow: 2;
-  /* justify-content: space-around; */
   padding: 0.5rem;
 }
 .song-title {
   font-weight: bold;
   font-size: 0.875rem;
   color: #333;
-}
-.request-table-header {
-  font-weight: bold;
-  font-size: 0.875rem;
-  color: #666;
-}
-.request-row {
-  background-color: #ffffff;
-}
-.request-row.alt-row {
-  background-color: #f3f3f3;
 }
 
 .song-info {
@@ -254,13 +258,12 @@ onMounted(async () => {
 .artist {
   font-size: 0.875rem;
 }
-.added-by {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 0.875rem;
-}
 
+.song-details-ui {
+  color: #7C7C7C;
+  font-weight: 500;
+  font-size: .75rem;
+}
 .action-menu-wrapper {
   position: relative;
 }
@@ -272,8 +275,8 @@ onMounted(async () => {
 }
 .popup-menu {
   position: absolute;
-  top: 100%;
-  /* right: 0; */
+  /* top: 100%; */
+  right: 0;
   background: white;
   border: 1px solid #ccc;
   border-radius: 6px;
@@ -283,7 +286,7 @@ onMounted(async () => {
   flex-direction: column;
   gap: 0.25rem;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-  width: 7rem;
+  width: 9.5rem;
 }
 .popup-menu a,
 .popup-menu button {
@@ -292,11 +295,14 @@ onMounted(async () => {
   background: none;
   text-align: left;
   cursor: pointer;
+  /* padding-top: .5rem; */
+  /* border-top: 1px solid black; */
+
 }
 
 .popup-menu a:hover, .popup-menu button:hover {
   color: #6c63ff;
-  background-color: #f3f3f3;
+  font-weight: bold;
 }
 
 .song-text {
@@ -317,6 +323,28 @@ onMounted(async () => {
     align-items: flex-start;
   }
 
+  .added-by {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.875rem;
+  }
+
+  .request-row {
+    background-color: #ffffff;
+  }
+  .request-row.alt-row {
+    background-color: #f3f3f3;
+  }
+  .description {
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+  text-align: left;
+  }
+  .description span {
+    color: #6c63ff;
+    font-weight: bold;
+  }
   .main-column {
     flex: 0 0 40%;
     max-width: 40%;
@@ -332,7 +360,12 @@ onMounted(async () => {
   .close-date span {
   color: #6c63ff;
   font-weight: bold;
-}
+  }
+  .request-table-header {
+  font-weight: bold;
+  font-size: 0.875rem;
+  color: #666;
+  }
 }
 
 
@@ -342,6 +375,41 @@ onMounted(async () => {
     width: 285px;
     height: 288px;
   }
+
+  .added-by {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.875rem;
+    width: 100%;
+    position: relative;
+    padding-right: 5rem;
+  }
+
+
+  .added-by span {
+    flex-shrink: 0;
+  }
+
+  .action-menu-wrapper {
+    position: absolute;
+    right: 0.5rem; /* or 1rem if you want more space */
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+  }
+
+
+
+  .request-table-header {
+    display: none;
+  }
+
+  .desktop-artist {
+    display: none;
+  }
+
 
   .main-column {
   display: flex;
@@ -357,11 +425,11 @@ onMounted(async () => {
   .playlist-detail-container {
     flex-direction: column;
   }
-  .request-table-header,
-  .request-row {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
+  .request-row{
+    border-top: 1px solid #ddd;
+  }
+  .description {
+    display: none;
   }
   .desktop-title-group {
     display: none;
@@ -407,6 +475,8 @@ onMounted(async () => {
   }
   .mobile-title {
     font-size: 1.5rem;
+    font-weight: 500;
+    margin: 1rem;
   }
 }
 
