@@ -73,7 +73,7 @@
             <!-- Added By + Menu -->
             <div class="added-by">
               <span>{{ song.requested_by }}</span>
-              <div class="action-menu-wrapper">
+              <div class="action-menu-wrapper" :ref="el => menuRefs[song.id] = el">
                 <img
                   src="/icons/inactive-select-buttons.svg"
                   class="action-icon"
@@ -101,7 +101,7 @@
 
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, onBeforeUnmount, reactive } from 'vue'
 import { supabase } from '@/lib/supabase'
 import { useRoute } from 'vue-router'
 import SongRequestForm from './SongRequestForm.vue'
@@ -114,6 +114,23 @@ const songRequests = ref<any[]>([])
 const openMenuId = ref<string | null>(null)
 const hoveredSongId = ref<string | null>(null)
 const isSubmitting = ref(false)
+
+const menuRefs = reactive<Record<string, HTMLElement | null>>({})
+
+const handleClickOutside = (event: MouseEvent) => {
+  if (
+    openMenuId.value &&
+    menuRefs[openMenuId.value] &&
+    !menuRefs[openMenuId.value]?.contains(event.target as Node)
+  ) {
+    openMenuId.value = null
+  }
+}
+
+const handleScroll = () => {
+  openMenuId.value = null
+}
+
 
 const fetchSongs = async () => {
   const { data, error } = await supabase
@@ -146,11 +163,25 @@ const formatDate = (isoString: string): string => {
 }
 
 onMounted(async () => {
-  const { data, error } = await supabase.from('playlists').select('*').eq('id', playlistId).single()
+  window.addEventListener('click', handleClickOutside)
+  window.addEventListener('scroll', handleScroll, true)
+
+  const { data, error } = await supabase
+    .from('playlists')
+    .select('*')
+    .eq('id', playlistId)
+    .single()
+
   if (!error) playlist.value = data
   loading.value = false
   await fetchSongs()
 })
+
+onBeforeUnmount(() => {
+  window.removeEventListener('click', handleClickOutside)
+  window.removeEventListener('scroll', handleScroll, true)
+})
+
 </script>
 
 <style scoped>
