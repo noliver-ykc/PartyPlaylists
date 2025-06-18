@@ -142,7 +142,6 @@ const submitRequest = async (track: any) => {
     alert('Failed to submit request: ' + error.message)
   } else {
     emit('request-submitted')
-    requestedBy.value = ''
     searchQuery.value = ''
     searchResults.value = []
   }
