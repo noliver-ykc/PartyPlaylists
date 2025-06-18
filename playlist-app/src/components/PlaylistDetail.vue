@@ -235,20 +235,13 @@ onBeforeUnmount(() => {
   display: grid;
   grid-template-columns: 60% 20% 20%;
   align-items: center;
-  /* gap: 1rem; */
   flex-grow: 2;
-  /* justify-content: space-around; */
   padding: 0.5rem;
 }
 .song-title {
   font-weight: bold;
   font-size: 0.875rem;
   color: #333;
-}
-.request-table-header {
-  font-weight: bold;
-  font-size: 0.875rem;
-  color: #666;
 }
 
 .song-info {
@@ -358,7 +351,12 @@ onBeforeUnmount(() => {
   .close-date span {
   color: #6c63ff;
   font-weight: bold;
-}
+  }
+  .request-table-header {
+  font-weight: bold;
+  font-size: 0.875rem;
+  color: #666;
+  }
 }
 
 
@@ -367,6 +365,9 @@ onBeforeUnmount(() => {
   .playlist-cover-id {
     width: 285px;
     height: 288px;
+  }
+  .request-table-header {
+    display: none;
   }
 
   .desktop-artist {
@@ -387,15 +388,8 @@ onBeforeUnmount(() => {
   .playlist-detail-container {
     flex-direction: column;
   }
-  .request-table-header,
-  .request-row {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-  }
   .request-row{
-        border-top: 1px solid #ddd;
-
+    border-top: 1px solid #ddd;
   }
   .description {
     display: none;
