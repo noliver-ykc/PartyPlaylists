@@ -63,12 +63,9 @@
               <img :src="song.album_cover_url" class="thumb" alt="Album cover" />
               <div class="song-text">
                 <small class="truncate song-title">{{ song.title }}</small>
-                <small class="truncate"><i>{{ song.album_name }}</i></small>
+                <small class="truncate artist"><i>{{ song.artist }}</i></small>
               </div>
             </div>
-
-            <!-- Artist -->
-            <span class="artist">{{ song.artist }}</span>
 
             <!-- Added By + Menu -->
             <div class="added-by">
@@ -233,12 +230,6 @@ onMounted(async () => {
   font-size: 0.875rem;
   color: #666;
 }
-.request-row {
-  background-color: #ffffff;
-}
-.request-row.alt-row {
-  background-color: #f3f3f3;
-}
 
 .song-info {
   display: flex;
@@ -317,6 +308,13 @@ onMounted(async () => {
     align-items: flex-start;
   }
 
+  .request-row {
+  background-color: #ffffff;
+}
+.request-row.alt-row {
+  background-color: #f3f3f3;
+}
+
   .main-column {
     flex: 0 0 40%;
     max-width: 40%;
@@ -362,6 +360,10 @@ onMounted(async () => {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+  }
+  .request-row{
+        border-top: 1px solid #ddd;
+
   }
   .desktop-title-group {
     display: none;
