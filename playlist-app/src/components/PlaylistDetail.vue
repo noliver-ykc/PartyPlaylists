@@ -258,12 +258,6 @@ onBeforeUnmount(() => {
 .artist {
   font-size: 0.875rem;
 }
-.added-by {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 0.875rem;
-}
 
 .song-details-ui {
   color: #7C7C7C;
@@ -281,8 +275,8 @@ onBeforeUnmount(() => {
 }
 .popup-menu {
   position: absolute;
-  top: 100%;
-  /* right: 0; */
+  /* top: 100%; */
+  right: 0;
   background: white;
   border: 1px solid #ccc;
   border-radius: 6px;
@@ -292,7 +286,7 @@ onBeforeUnmount(() => {
   flex-direction: column;
   gap: 0.25rem;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-  width: 7rem;
+  width: 9.5rem;
 }
 .popup-menu a,
 .popup-menu button {
@@ -301,11 +295,14 @@ onBeforeUnmount(() => {
   background: none;
   text-align: left;
   cursor: pointer;
+  /* padding-top: .5rem; */
+  /* border-top: 1px solid black; */
+
 }
 
 .popup-menu a:hover, .popup-menu button:hover {
   color: #6c63ff;
-  background-color: #f3f3f3;
+  font-weight: bold;
 }
 
 .song-text {
@@ -324,6 +321,13 @@ onBeforeUnmount(() => {
   .playlist-detail-container {
     flex-direction: row;
     align-items: flex-start;
+  }
+
+  .added-by {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.875rem;
   }
 
   .request-row {
@@ -371,6 +375,33 @@ onBeforeUnmount(() => {
     width: 285px;
     height: 288px;
   }
+
+  .added-by {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.875rem;
+    width: 100%;
+    position: relative;
+    padding-right: 5rem;
+  }
+
+
+  .added-by span {
+    flex-shrink: 0;
+  }
+
+  .action-menu-wrapper {
+    position: absolute;
+    right: 0.5rem; /* or 1rem if you want more space */
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+  }
+
+
+
   .request-table-header {
     display: none;
   }
