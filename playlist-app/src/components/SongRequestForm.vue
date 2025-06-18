@@ -7,31 +7,34 @@
       </div>
     </div>
 
-    <!-- Your Name input -->
+    <!-- input bars -->
     <div class="input-group">
-      <div class="search-input">
-        <input
-          v-model="requestedBy"
-          placeholder="Your Name"
-          :class="{ 'input-error': showNameError }"
-        />
-        <!-- Search bar with clear icon -->
-        <div class="search-bar-wrapper">
+      <div class="input-wrapper">
+        <div class="search-input">
           <input
-            v-model="searchQuery"
-            placeholder="Search"
-            @input="handleSearch"
+            v-model="requestedBy"
+            placeholder="Your Name"
+            :class="{ 'input-error': showNameError }"
           />
-          <img
-            v-if="searchQuery"
-            src="/icons/delete-text.svg"
-            class="delete-text-icon"
-            alt="Clear"
-            @click="clearSearch"
-          />
+        <!-- Search bar with clear icon -->
+          <div class="search-bar-wrapper">
+            <input
+              v-model="searchQuery"
+              placeholder="Search"
+              @input="handleSearch"
+            />
+            <img
+              v-if="searchQuery"
+              src="/icons/delete-text.svg"
+              class="delete-text-icon"
+              alt="Clear"
+              @click="clearSearch"
+            />
+          </div>
         </div>
+
+        <p v-if="showNameError" class="error-message">name please 🙇‍♀️</p>
       </div>
-      <p v-if="showNameError" class="error-message">name please 🙇‍♀️</p>
     </div>
 
     <p class="dj-note">
@@ -159,44 +162,54 @@ const submitRequest = async (track: any) => {
   align-items: center;
 }
 
+.input-wrapper {
+  width: 100%;
+  max-width: 500px;
+  padding: 0 1rem;
+  box-sizing: border-box;
+}
+
 .search-input {
   display: flex;
   flex-direction: row;
   gap: 0.5rem;
-  justify-content: center;
-  align-items: center;
-  flex-wrap: nowrap;
+  width: 100%;
 }
 
-.search-input input {
-  width: 1fr;
-  height: 28px;
+.search-input > input,
+.search-bar-wrapper {
+  flex: 1;
+  box-sizing: border-box;
+}
+
+.search-input > input,
+.search-bar-wrapper input {
+  width: 100%;
+  height: 40px;
   font-size: 16px;
   border: 1px solid #ccc;
   border-radius: 6px;
   background-color: #fff;
-  color: #9a9a9a;
+  color: #333;
   padding-left: 15px;
+  box-sizing: border-box;
 }
 
 .input-error {
-  border: 1px solid #D75454 !important;
-  color: #D75454 !important;
+  border: 1px solid #b53a3a !important;
+  color: #b53a3a !important;
 }
-
 .input-error::placeholder {
-  color: #D75454 !important;
+  color: #b53a3a !important;
 }
 
 .error-message {
-  color: #D75454;
+  color: #b53a3a;
   font-size: 0.75rem;
-  padding-left: 2.2rem;
   margin-top: 4px;
   text-align: left;
-  width: 100%;
-  max-width: 400px;
   font-weight: bold;
+  padding-left: 4px;
 }
 
 .song-details-ui {
@@ -210,15 +223,7 @@ const submitRequest = async (track: any) => {
 }
 
 .search-bar-wrapper input {
-  width: 1fr;
-  height: 28px;
-  background-color: #fff;
-  font-weight: 500;
-  font-size: 16px;
   padding-left: 30px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  color: #333;
 }
 
 .search-bar-wrapper::before {
@@ -235,6 +240,16 @@ const submitRequest = async (track: any) => {
   pointer-events: none;
 }
 
+.delete-text-icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
 .search-results {
   background-color: #f5f5f5;
   border-radius: 8px;
@@ -244,14 +259,18 @@ const submitRequest = async (track: any) => {
   overflow-y: auto;
 }
 
-.delete-text-icon {
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 16px;
-  height: 16px;
-  cursor: pointer;
+.search-result {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.3rem 0.5rem;
+  gap: 0.5rem;
+}
+
+.search-result-text {
+  flex: 1;
+  margin-left: 0.5rem;
+  overflow: hidden;
 }
 
 .search-result-text p {
@@ -269,20 +288,6 @@ const submitRequest = async (track: any) => {
   height: 50px;
   object-fit: cover;
   border-radius: 4px;
-}
-
-.search-result {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.3rem 0.5rem;
-  gap: 0.5rem;
-}
-
-.search-result-text {
-  flex: 1;
-  margin-left: 0.5rem;
-  overflow: hidden;
 }
 
 .add-song-btn {
