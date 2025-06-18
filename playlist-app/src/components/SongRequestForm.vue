@@ -32,6 +32,10 @@
       </div>
     </div>
 
+    <p class="dj-note">
+      <span>From the DJ:</span> {{ playlistDescription }}
+    </p>
+
     <!-- Search Results -->
     <div v-if="searchResults.length > 0" class="search-results">
       <div
@@ -58,7 +62,6 @@ import { ref } from 'vue'
 import { supabase } from '@/lib/supabase'
 import { getSpotifyAccessToken } from '@/lib/spotify'
 
-const props = defineProps<{ playlistId: string }>()
 const emit = defineEmits(['request-submitted', 'request-started', 'request-ended'])
 
 const requestedBy = ref('')
@@ -67,6 +70,10 @@ const searchQuery = ref('')
 const searchResults = ref<any[]>([])
 
 
+const props = defineProps<{
+  playlistId: string
+  playlistDescription: string
+}>()
 
 const handleSearch = async () => {
   if (searchQuery.value.trim().length < 2) {
@@ -190,11 +197,25 @@ const submitRequest = async (track: any) => {
   background-color: #fff;
   font-weight: 500;
   font-size: 14px;
-  padding-left: 15px; /* 👈 creates space for icon */
+  padding-left: 30px; /* 👈 creates space for icon */
   border: 1px solid #ccc;
   border-radius: 6px;
   color: #333;
 }
+
+.dj-note {
+  font-size: 0.85rem;
+  margin-top: 0.75rem;
+  text-align: left;
+  color: #888;
+  padding: 0 0.5rem;
+}
+
+.dj-note span {
+  font-weight: bold;
+  color: #6c63ff;
+}
+
 
 
 .search-bar-wrapper::before {

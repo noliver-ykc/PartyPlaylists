@@ -30,14 +30,14 @@
           </p>
           <h1 class="playlist-title mobile-title">{{ playlist.title }}</h1>
         </div>
-        <p class="description"><span>From the DJ:</span> {{ playlist.description }}</p>
-
         <SongRequestForm
           :playlistId="playlist.id"
+          :playlistDescription="playlist.description"
           @request-submitted="fetchSongs"
           @request-started="isSubmitting = true"
           @request-ended="isSubmitting = false"
         />
+
 
       </div>
 
@@ -407,6 +407,8 @@ onMounted(async () => {
   }
   .mobile-title {
     font-size: 1.5rem;
+    font-weight: 500;
+    margin: 1rem;
   }
 }
 
