@@ -27,7 +27,7 @@
           src="/icons/delete-text.svg"
           class="delete-text-icon"
           alt="Clear"
-          @click="searchQuery = ''"
+          @click="clearSearch"
         />
       </div>
     </div>
@@ -96,6 +96,10 @@ const handleSearch = async () => {
   searchResults.value = data.tracks?.items || []
 }
 
+const clearSearch = () => {
+  searchQuery.value = ''
+  searchResults.value = []
+}
 
 const getAppleMusicUrl = async (spotifyUrl: string): Promise<string | null> => {
   try {
