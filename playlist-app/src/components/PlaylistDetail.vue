@@ -68,7 +68,7 @@
               </div>
             </div>
              <!-- Artist -->
-            <span class="desktop artist">{{ song.artist }}</span>
+            <span class="desktop-artist">{{ song.artist }}</span>
 
             <!-- Added By + Menu -->
             <div class="added-by">
@@ -338,7 +338,7 @@ onMounted(async () => {
     height: 288px;
   }
 
-  .desktop, .artist {
+  .desktop-artist {
     display: none;
   }
 
