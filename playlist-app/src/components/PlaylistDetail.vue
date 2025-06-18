@@ -304,9 +304,7 @@ onBeforeUnmount(() => {
   background: none;
   text-align: left;
   cursor: pointer;
-  /* padding-top: .5rem; */
-  /* border-top: 1px solid black; */
-
+  padding: .5rem;
 }
 
 .popup-menu a:hover, .popup-menu button:hover {

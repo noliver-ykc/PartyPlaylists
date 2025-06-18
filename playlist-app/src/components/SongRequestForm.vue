@@ -169,7 +169,7 @@ const submitRequest = async (track: any) => {
 
 
 .search-input input {
-  width: 1.5fr;
+  width: 1fr;
   height: 28px;
   font-size: 16px;
   border: 1px solid #ccc;
@@ -192,7 +192,7 @@ const submitRequest = async (track: any) => {
 }
 
 .search-bar-wrapper input {
-  width: 1.5fr;
+  width: 1fr;
   height: 28px;
   background-color: #fff;
   font-weight: 500;
