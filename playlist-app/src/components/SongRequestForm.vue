@@ -46,7 +46,7 @@
         <img :src="track.album.images[2]?.url" class="search-result-art" alt="Album Art" />
         <div class="search-result-text">
           <p>{{ track.name }}</p>
-          <small>{{ track.artists.map(a => a.name).join(', ') }}</small>
+          <small class="song-details-ui">{{ track.artists.map(a => a.name).join(', ') }}</small>
         </div>
         <button @click="submitRequest(track)" class="add-song-btn">
           <img src="/icons/add-song-button.svg" alt="Add Song" />
@@ -172,6 +172,12 @@ const submitRequest = async (track: any) => {
   color: #9a9a9a;
   padding-left: 15px; /* 👈 creates space for icon */
 
+}
+
+.song-details-ui {
+  color: #7C7C7C;
+  font-weight: 500;
+  font-size: .75rem;
 }
 
 .search-bar-wrapper {

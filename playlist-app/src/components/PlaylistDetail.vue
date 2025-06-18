@@ -64,15 +64,15 @@
               <img :src="song.album_cover_url" class="thumb" alt="Album cover" />
               <div class="song-text">
                 <small class="truncate song-title">{{ song.title }}</small>
-                <small class="truncate artist"><i>{{ song.artist }}</i></small>
+                <small class="truncate artist song-details-ui "><i>{{ song.artist }}</i></small>
               </div>
             </div>
              <!-- Artist -->
-            <span class="desktop-artist">{{ song.artist }}</span>
+            <span class="desktop-artist song-details-ui ">{{ song.artist }}</span>
 
             <!-- Added By + Menu -->
             <div class="added-by">
-              <span>{{ song.requested_by }}</span>
+              <span class="song-details-ui" >{{ song.requested_by }}</span>
               <div class="action-menu-wrapper" :ref="el => menuRefs[song.id] = el">
                 <img
                   src="/icons/inactive-select-buttons.svg"
@@ -265,6 +265,11 @@ onBeforeUnmount(() => {
   font-size: 0.875rem;
 }
 
+.song-details-ui {
+  color: #7C7C7C;
+  font-weight: 500;
+  font-size: .75rem;
+}
 .action-menu-wrapper {
   position: relative;
 }
@@ -373,6 +378,7 @@ onBeforeUnmount(() => {
   .desktop-artist {
     display: none;
   }
+
 
   .main-column {
   display: flex;
