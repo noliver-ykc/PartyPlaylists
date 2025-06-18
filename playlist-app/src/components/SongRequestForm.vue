@@ -171,7 +171,7 @@ const submitRequest = async (track: any) => {
 .search-input input {
   width: 1.5fr;
   height: 28px;
-  font-size: 14px;
+  font-size: 16px;
   border: 1px solid #ccc;
   border-radius: 6px;
   background-color: #fff;
@@ -196,7 +196,7 @@ const submitRequest = async (track: any) => {
   height: 28px;
   background-color: #fff;
   font-weight: 500;
-  font-size: 14px;
+  font-size: 16px;
   padding-left: 30px; /* 👈 creates space for icon */
   border: 1px solid #ccc;
   border-radius: 6px;
