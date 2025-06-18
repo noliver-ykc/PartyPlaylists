@@ -75,7 +75,7 @@
               <span class="song-details-ui" >{{ song.requested_by }}</span>
               <div class="action-menu-wrapper" :ref="el => menuRefs[song.id] = el">
                 <img
-                  src="/icons/inactive-select-buttons.svg"
+                  :src="openMenuId === song.id ? '/icons/active-select-buttons.svg' : '/icons/inactive-select-buttons.svg'"
                   class="action-icon"
                   @click="toggleMenu(song.id)"
                 />
