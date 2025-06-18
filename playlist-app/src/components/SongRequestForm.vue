@@ -1,26 +1,35 @@
 <template>
   <form @submit.prevent>
-    <!-- Your Name input -->
-    <input
-      v-model="requestedBy"
-      placeholder="Your Name"
-      :class="{ 'input-error': showNameError }"
-    />
+    <!-- Loading Overlay -->
+    <div v-if="submitting" class="loading-overlay">
+      <div class="loading-dots">
+        Loading<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span>
+      </div>
+    </div>
 
-    <!-- Search bar with clear icon -->
-    <div class="search-bar-wrapper">
+    <!-- Your Name input -->
+    <div class="search-input">
       <input
-        v-model="searchQuery"
-        placeholder="Search For a Song or Artist"
-        @input="handleSearch"
+        v-model="requestedBy"
+        placeholder=" Your Name"
+        :class="{ 'input-error': showNameError }"
       />
-      <img
-        v-if="searchQuery"
-        src="/icons/delete-text.svg"
-        class="delete-text-icon"
-        alt="Clear"
-        @click="searchQuery = ''"
-      />
+
+      <!-- Search bar with clear icon -->
+      <div class="search-bar-wrapper">
+        <input
+          v-model="searchQuery"
+          placeholder="　 Search"
+          @input="handleSearch"
+        />
+        <img
+          v-if="searchQuery"
+          src="/icons/delete-text.svg"
+          class="delete-text-icon"
+          alt="Clear"
+          @click="searchQuery = ''"
+        />
+      </div>
     </div>
 
     <!-- Search Results -->
@@ -30,8 +39,8 @@
         :key="track.id"
         class="search-result"
       >
-        <img :src="track.album.images[2]?.url" alt="Album Art" />
-        <div>
+        <img :src="track.album.images[2]?.url" class="search-result-art" alt="Album Art" />
+        <div class="search-result-text">
           <p>{{ track.name }}</p>
           <small>{{ track.artists.map(a => a.name).join(', ') }}</small>
         </div>
@@ -42,6 +51,7 @@
     </div>
   </form>
 </template>
+
 
 <script setup lang="ts">
 import { ref } from 'vue'
@@ -79,6 +89,7 @@ const handleSearch = async () => {
   searchResults.value = data.tracks?.items || []
 }
 
+
 const getAppleMusicUrl = async (spotifyUrl: string): Promise<string | null> => {
   try {
     const res = await fetch(`https://api.song.link/v1-alpha.1/links?url=${encodeURIComponent(spotifyUrl)}`)
@@ -89,7 +100,7 @@ const getAppleMusicUrl = async (spotifyUrl: string): Promise<string | null> => {
     return null
   }
 }
-
+const submitting = ref(false)
 const submitRequest = async (track: any) => {
   if (!requestedBy.value.trim()) {
     showNameError.value = true
@@ -99,6 +110,7 @@ const submitRequest = async (track: any) => {
 
   showNameError.value = false
   emit('request-started')
+  submitting.value = true
 
   const appleMusicUrl = await getAppleMusicUrl(track.external_urls.spotify)
 
@@ -115,6 +127,8 @@ const submitRequest = async (track: any) => {
       status: 'requested'
     }
   ])
+
+  submitting.value = false
   emit('request-ended')
 
   if (error) {
@@ -126,56 +140,137 @@ const submitRequest = async (track: any) => {
     searchResults.value = []
   }
 }
+
 </script>
 
 <style scoped>
-.input-error {
-  border-color: red;
+/* .search-input {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.search-input input {
+  flex: 1;
+  padding: 0.4rem;
+} */
+
+.search-input {
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: nowrap; /* 👈 prevent stacking */
+}
+
+
+.search-input input {
+  width: 173px;
+  height: 28px;
+  /* padding: 0 0.5rem; */
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: #fff;
+  color: #9a9a9a;
+  padding-left: 15px; /* 👈 creates space for icon */
+
 }
 
 .search-bar-wrapper {
   position: relative;
-  display: flex;
-  align-items: center;
+  flex: 1;
 }
 
+.search-bar-wrapper input {
+  width: 173px;
+  height: 28px;
+  background-color: #fff;
+  font-weight: 500;
+  font-size: 14px;
+  padding-left: 15px; /* 👈 creates space for icon */
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  color: #333;
+}
+
+
+.search-bar-wrapper::before {
+  content: '';
+  background-image: url('/icons/search-icon.svg');
+  background-repeat: no-repeat;
+  background-size: 16px 16px;
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  pointer-events: none;
+}
+
+
+.search-results {
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  padding: 1rem 0.5rem;
+  margin-top: 1rem;
+  max-height: 200px;
+  overflow-y: auto;
+}
 .delete-text-icon {
   position: absolute;
   right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
   width: 16px;
   height: 16px;
   cursor: pointer;
 }
 
-.search-results {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  margin-top: 1rem;
+.search-result-text p {
+  margin: 0;
+  font-size: 13px;
+  font-weight: bold;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  display: block;
 }
 
+.search-result-art {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 4px;
+}
 .search-result {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  padding: 0.3rem 0.5rem;
   gap: 0.5rem;
 }
 
-.search-result img {
-  width: 40px;
-  height: 40px;
-  border-radius: 4px;
+.search-result-text {
+  flex: 1;
+  margin-left: 0.5rem;
+  overflow: hidden;
 }
 
 .add-song-btn {
-  margin-left: auto;
   background: none;
   border: none;
   padding: 0;
+  margin-left: 0.5rem;
   cursor: pointer;
 }
-
 .add-song-btn img {
-  width: 20px;
-  height: 20px;
+  width: 14px;
+  height: 14px;
 }
+
+
 </style>
