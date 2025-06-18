@@ -46,7 +46,7 @@
         <img :src="track.album.images[2]?.url" class="search-result-art" alt="Album Art" />
         <div class="search-result-text">
           <p>{{ track.name }}</p>
-          <small class="song-details-ui">{{ track.artists.map(a => a.name).join(', ') }}</small>
+          <small class="song-details-ui">{{ track.artists.map((a: Artist) => a.name).join(', ') }}</small>
         </div>
         <button @click="submitRequest(track)" class="add-song-btn">
           <img src="/icons/add-song-button.svg" alt="Add Song" />
@@ -68,6 +68,8 @@ const requestedBy = ref('')
 const showNameError = ref(false)
 const searchQuery = ref('')
 const searchResults = ref<any[]>([])
+type Artist = { name: string }
+
 
 
 const props = defineProps<{

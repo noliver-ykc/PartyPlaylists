@@ -73,7 +73,7 @@
             <!-- Added By + Menu -->
             <div class="added-by">
               <span class="song-details-ui" >{{ song.requested_by }}</span>
-              <div class="action-menu-wrapper" :ref="el => menuRefs[song.id] = el">
+              <div class="action-menu-wrapper" :ref="el => setMenuRef(el, song.id)">
                 <img
                   :src="openMenuId === song.id ? '/icons/active-select-buttons.svg' : '/icons/inactive-select-buttons.svg'"
                   class="action-icon"
@@ -101,7 +101,7 @@
 
 
 <script setup lang="ts">
-import { onMounted, ref, onBeforeUnmount, reactive } from 'vue'
+import { onMounted, ref, onBeforeUnmount, reactive, type ComponentPublicInstance } from 'vue'
 import { supabase } from '@/lib/supabase'
 import { useRoute } from 'vue-router'
 import SongRequestForm from './SongRequestForm.vue'
@@ -115,7 +115,16 @@ const openMenuId = ref<string | null>(null)
 const hoveredSongId = ref<string | null>(null)
 const isSubmitting = ref(false)
 
-const menuRefs = reactive<Record<string, HTMLElement | null>>({})
+const menuRefs: Record<string, HTMLElement | null> = {}
+const setMenuRef = (el: Element | ComponentPublicInstance | null, id: string) => {
+  // Only assign if it's a real DOM element
+  if (el instanceof HTMLElement) {
+    menuRefs[id] = el
+  } else {
+    menuRefs[id] = null
+  }
+}
+
 
 const handleClickOutside = (event: MouseEvent) => {
   if (
