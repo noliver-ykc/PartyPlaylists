@@ -19,7 +19,7 @@
       <div class="search-bar-wrapper">
         <input
           v-model="searchQuery"
-          placeholder="　 Search"
+          placeholder="Search"
           @input="handleSearch"
         />
         <img
@@ -151,17 +151,7 @@ const submitRequest = async (track: any) => {
 </script>
 
 <style scoped>
-/* .search-input {
-  display: flex;
-  gap: 0.5rem;
-  align-items: flex-start;
-  flex-wrap: wrap;
-}
 
-.search-input input {
-  flex: 1;
-  padding: 0.4rem;
-} */
 
 .search-input {
   display: flex;
@@ -174,9 +164,8 @@ const submitRequest = async (track: any) => {
 
 
 .search-input input {
-  width: 173px;
+  width: 1.5fr;
   height: 28px;
-  /* padding: 0 0.5rem; */
   font-size: 14px;
   border: 1px solid #ccc;
   border-radius: 6px;
@@ -188,11 +177,11 @@ const submitRequest = async (track: any) => {
 
 .search-bar-wrapper {
   position: relative;
-  flex: 1;
+  /* flex: 1; */
 }
 
 .search-bar-wrapper input {
-  width: 173px;
+  width: 1.5fr;
   height: 28px;
   background-color: #fff;
   font-weight: 500;
@@ -202,21 +191,6 @@ const submitRequest = async (track: any) => {
   border-radius: 6px;
   color: #333;
 }
-
-.dj-note {
-  font-size: 0.85rem;
-  margin-top: 0.75rem;
-  text-align: left;
-  color: #888;
-  padding: 0 0.5rem;
-}
-
-.dj-note span {
-  font-weight: bold;
-  color: #6c63ff;
-}
-
-
 
 .search-bar-wrapper::before {
   content: '';
@@ -292,6 +266,27 @@ const submitRequest = async (track: any) => {
   width: 14px;
   height: 14px;
 }
+/* Desktop */
+@media (min-width: 769px) {
+  .dj-note {
+    display: none;
+  }
+}
 
+/* Mobile */
+@media (max-width: 768px) {
+  .dj-note {
+  font-size: 0.85rem;
+  margin-top: 0.75rem;
+  text-align: left;
+  color: #888;
+  padding: 0 0.5rem;
+}
+
+.dj-note span {
+  font-weight: bold;
+  color: #6c63ff;
+}
+}
 
 </style>

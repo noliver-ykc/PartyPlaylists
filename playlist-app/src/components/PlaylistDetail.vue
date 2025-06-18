@@ -30,6 +30,7 @@
           </p>
           <h1 class="playlist-title mobile-title">{{ playlist.title }}</h1>
         </div>
+        <p class="description"><span>From the DJ:</span> {{ playlist.description }}</p>
         <SongRequestForm
           :playlistId="playlist.id"
           :playlistDescription="playlist.description"
@@ -66,6 +67,8 @@
                 <small class="truncate artist"><i>{{ song.artist }}</i></small>
               </div>
             </div>
+             <!-- Artist -->
+            <span class="desktop artist">{{ song.artist }}</span>
 
             <!-- Added By + Menu -->
             <div class="added-by">
@@ -172,10 +175,6 @@ onMounted(async () => {
   font-weight: bold;
 }
 
-/* .main-column {
-  flex: 1;
-} */
-
 .right-column {
   flex: 2;
   width: 100%;
@@ -186,16 +185,6 @@ onMounted(async () => {
   width: 510px;
   height: 271px;
   border-radius: 7px;
-}
-
-.description {
-  font-size: 0.875rem;
-  margin-bottom: 1rem;
-  text-align: left;
-}
-.description span {
-  color: #6c63ff;
-  font-weight: bold;
 }
 
 .close-date {
@@ -309,12 +298,20 @@ onMounted(async () => {
   }
 
   .request-row {
-  background-color: #ffffff;
-}
-.request-row.alt-row {
-  background-color: #f3f3f3;
-}
-
+    background-color: #ffffff;
+  }
+  .request-row.alt-row {
+    background-color: #f3f3f3;
+  }
+  .description {
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+  text-align: left;
+  }
+  .description span {
+    color: #6c63ff;
+    font-weight: bold;
+  }
   .main-column {
     flex: 0 0 40%;
     max-width: 40%;
@@ -341,6 +338,10 @@ onMounted(async () => {
     height: 288px;
   }
 
+  .desktop, .artist {
+    display: none;
+  }
+
   .main-column {
   display: flex;
   flex-direction: column;
@@ -364,6 +365,9 @@ onMounted(async () => {
   .request-row{
         border-top: 1px solid #ddd;
 
+  }
+  .description {
+    display: none;
   }
   .desktop-title-group {
     display: none;
