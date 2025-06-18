@@ -1,32 +1,38 @@
 <template>
-  <div class="home-page">
-    <h1>Playlists</h1>
-    <div class="playlist-scroll-container">
-      <div class="playlist-grid">
-        <div
-          class="playlist-card"
-          v-for="playlist in playlists"
-          :key="playlist.id"
-          @click="goToPlaylist(playlist.id)"
-        >
-          <p class="updated-by">
-            RECENTLY UPDATED BY <span>{{ playlist.updated_by }}</span>
-          </p>
-          <h2>{{ playlist.title }}</h2>
-          <p class="close-date">
-            Requests Close {{ formatDate(playlist.close_date) }}
-          </p>
-          <img
-            :src="playlist.cover_image_url"
-            alt="Cover"
-            class="playlist-cover"
-            v-if="playlist.cover_image_url"
-          />
+  <div v-if="loading" class="loading-overlay">
+    <div class="loading-dots">
+      Loading<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span>
+    </div>
+  </div>
+  <div v-else >
+    <div class="home-page">
+      <h1>Playlists</h1>
+      <div class="playlist-scroll-container">
+        <div class="playlist-grid">
+          <div
+            class="playlist-card"
+            v-for="playlist in playlists"
+            :key="playlist.id"
+            @click="goToPlaylist(playlist.id)"
+          >
+            <p class="updated-by">
+              RECENTLY UPDATED BY <span>{{ playlist.updated_by }}</span>
+            </p>
+            <h2>{{ playlist.title }}</h2>
+            <p class="close-date">
+              Requests Close {{ formatDate(playlist.close_date) }}
+            </p>
+            <img
+              :src="playlist.cover_image_url"
+              alt="Cover"
+              class="playlist-cover"
+              v-if="playlist.cover_image_url"
+            />
+          </div>
         </div>
       </div>
-    </div>
-
     <RecentlyAddedJams />
+    </div>
   </div>
 </template>
 
@@ -39,6 +45,8 @@ import RecentlyAddedJams from '@/components/RecentlyAddedJams.vue'
 
 const playlists = ref<any[]>([])
 const router = useRouter()
+const loading = ref(true)
+
 
 const fetchPlaylists = async () => {
   const { data, error } = await supabase
@@ -64,9 +72,11 @@ const goToPlaylist = (id: string) => {
   router.push(`/playlist/${id}`)
 }
 
-onMounted(() => {
-  fetchPlaylists()
+onMounted(async () => {
+  await fetchPlaylists()
+  loading.value = false
 })
+
 </script>
 
 <style scoped>
@@ -75,9 +85,10 @@ onMounted(() => {
 }
 
 h1 {
-  font-size: 2.5rem;
-  margin-bottom: 2.7rem;
+  /* font-size: 2.5rem;
+  margin-bottom: 2.7rem; */
   text-align: left;
+  margin: 0 0 1rem 0;
 }
 
 .playlist-scroll-container {
@@ -165,7 +176,7 @@ h1 {
   }
   h1 {
     font-size: 2.5rem;
-    margin-bottom: 1rem;
+    margin: 1rem 0;
     text-align: left;
   }
 

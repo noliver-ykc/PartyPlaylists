@@ -1,5 +1,10 @@
 <template>
-  <div class="recently-added-jams">
+  <div v-if="loading" class="loading-overlay">
+    <div class="loading-dots">
+      Loading<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span>
+    </div>
+  </div>
+  <div v-else class="recently-added-jams">
     <h3>Recently Added Jams</h3>
     <ul class="song-list">
       <li v-for="song in songRequests" :key="song.id" class="song-entry">
@@ -26,6 +31,8 @@ import { supabase } from '@/lib/supabase'
 const songRequests = ref<any[]>([])
 const hoveredId = ref<string | null>(null)
 const limit = ref(12)
+const loading = ref(true)
+
 
 const fetchSongs = async () => {
   const { data, error } = await supabase
@@ -44,8 +51,10 @@ const updateLimit = () => {
   fetchSongs()
 }
 
-onMounted(() => {
-  updateLimit()
+onMounted(async () => {
+  await updateLimit()
+  loading.value = false
+
   window.addEventListener('resize', updateLimit)
 })
 
