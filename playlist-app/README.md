@@ -1,5 +1,29 @@
-# Vue 3 + TypeScript + Vite
+# PartyPlaylists App
 
-This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+## Local setup
 
-Learn more about the recommended Project Setup and IDE Support in the [Vue Docs TypeScript Guide](https://vuejs.org/guide/typescript/overview.html#project-setup).
+1. Install dependencies:
+   ```bash
+   npm ci
+   ```
+2. Create local env file (already ignored by git):
+   ```bash
+   cp .env.example .env.local
+   ```
+3. Start the app:
+   ```bash
+   npm run dev
+   ```
+
+## Environment variables
+
+This app requires:
+
+- `VITE_SUPABASE_URL`
+- `VITE_SUPABASE_ANON_KEY`
+- `VITE_SPOTIFY_CLIENT_ID`
+- `VITE_SPOTIFY_CLIENT_SECRET`
+
+For Supabase direct DB access from server-side tools, use:
+
+- `SUPABASE_DB_URL` (optional, not used by the frontend runtime)
