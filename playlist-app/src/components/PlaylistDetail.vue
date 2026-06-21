@@ -10,7 +10,7 @@
     <div class="heading desktop-title-group">
       <h1 class="playlist-title">{{ playlist.title }}</h1>
       <p class="close-date">
-        REQUESTS CLOSE <span>{{ formatDate(playlist.close_date) }}</span>
+        REQUESTS CLOSE <span>{{ formatDisplayDate(playlist.close_date) }}</span>
       </p>
     </div>
 
@@ -26,17 +26,15 @@
         <!-- Mobile Title & Close Date -->
         <div class="mobile-only mobile-title-group">
           <p class="close-date">
-            REQUESTS CLOSE <span>{{ formatDate(playlist.close_date) }}</span>
+            REQUESTS CLOSE <span>{{ formatDisplayDate(playlist.close_date) }}</span>
           </p>
           <h1 class="playlist-title mobile-title">{{ playlist.title }}</h1>
         </div>
         <p class="description"><span>From the DJ:</span> {{ playlist.description }}</p>
         <SongRequestForm
           :playlistId="playlist.id"
-          :playlistDescription="playlist.description"
+          :playlistDescription="playlist.description ?? ''"
           @request-submitted="fetchSongs"
-          @request-started="isSubmitting = true"
-          @request-ended="isSubmitting = false"
         />
 
 
@@ -56,12 +54,10 @@
             :key="song.id"
             class="request-row"
             :class="{ 'alt-row': index % 2 === 1 }"
-            @mouseenter="hoveredSongId = song.id"
-            @mouseleave="hoveredSongId = null"
           >
             <!-- Song Info -->
             <div class="song-info">
-              <img :src="song.album_cover_url" class="thumb" alt="Album cover" />
+              <img :src="song.album_cover_url ?? ''" class="thumb" alt="Album cover" />
               <div class="song-text">
                 <small class="truncate song-title">{{ song.title }}</small>
                 <small class="truncate artist song-details-ui "><i>{{ song.artist }}</i></small>
@@ -80,8 +76,8 @@
                   @click="toggleMenu(song.id)"
                 />
                 <div v-if="openMenuId === song.id" class="popup-menu">
-                  <a :href="song.spotify_url" target="_blank">Open in Spotify</a>
-                  <a v-if="song.apple_url" :href="song.apple_url" target="_blank">Open in Apple Music</a>
+                  <a :href="song.spotify_url" target="_blank" rel="noopener noreferrer">Open in Spotify</a>
+                  <a v-if="song.apple_url" :href="song.apple_url" target="_blank" rel="noopener noreferrer">Open in Apple Music</a>
                   <a @click="deleteRequest(song.id)">Delete</a>
                 </div>
               </div>
@@ -101,19 +97,19 @@
 
 
 <script setup lang="ts">
-import { onMounted, ref, onBeforeUnmount, reactive, type ComponentPublicInstance } from 'vue'
+import { onMounted, ref, onBeforeUnmount, type ComponentPublicInstance } from 'vue'
 import { supabase } from '@/lib/supabase'
+import { formatDisplayDate } from '@/lib/date'
+import type { Playlist, SongRequest } from '@/types/models'
 import { useRoute } from 'vue-router'
 import SongRequestForm from './SongRequestForm.vue'
 
 const route = useRoute()
 const playlistId = route.params.id as string
-const playlist = ref<any>(null)
+const playlist = ref<Playlist | null>(null)
 const loading = ref(true)
-const songRequests = ref<any[]>([])
+const songRequests = ref<SongRequest[]>([])
 const openMenuId = ref<string | null>(null)
-const hoveredSongId = ref<string | null>(null)
-const isSubmitting = ref(false)
 
 const menuRefs: Record<string, HTMLElement | null> = {}
 const setMenuRef = (el: Element | ComponentPublicInstance | null, id: string) => {
@@ -148,7 +144,13 @@ const fetchSongs = async () => {
     .eq('playlist_id', playlistId)
     .order('created_at', { ascending: false })
 
-  if (!error) songRequests.value = data
+  if (error) {
+    console.error('Failed to fetch playlist requests', error)
+    songRequests.value = []
+    return
+  }
+
+  songRequests.value = (data ?? []) as SongRequest[]
 }
 
 const toggleMenu = (id: string) => {
@@ -161,15 +163,6 @@ const deleteRequest = async (id: string) => {
   else alert('Failed to delete request: ' + error.message)
 }
 
-const formatDate = (isoString: string): string => {
-  const date = new Date(isoString)
-  return date.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  })
-}
-
 onMounted(async () => {
   window.addEventListener('click', handleClickOutside)
   window.addEventListener('scroll', handleScroll, true)
@@ -180,7 +173,11 @@ onMounted(async () => {
     .eq('id', playlistId)
     .single()
 
-  if (!error) playlist.value = data
+  if (error) {
+    console.error('Failed to fetch playlist details', error)
+  } else {
+    playlist.value = data as Playlist
+  }
   loading.value = false
   await fetchSongs()
 })
@@ -274,6 +271,7 @@ onBeforeUnmount(() => {
 }
 .action-menu-wrapper {
   position: relative;
+  z-index: 1000;
 }
 .action-icon {
   cursor: pointer;
@@ -281,21 +279,23 @@ onBeforeUnmount(() => {
   height: 18px;
   margin-left: 8px;
 }
+
 .popup-menu {
   position: absolute;
-  /* top: 100%; */
   right: 0;
-  background: white;
+  background: purple; /* ensure it’s solid */
   border: 1px solid #ccc;
   border-radius: 6px;
   padding: 0.5rem;
-  z-index: 10;
+  z-index: 999; /* higher than surrounding elements */
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   width: 9.5rem;
+  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.15); /* stronger shadow */
+  backdrop-filter: blur(2px); /* optional subtle glass blur */
 }
+
 .popup-menu a,
 .popup-menu button {
   font-size: 0.9rem;
@@ -334,10 +334,12 @@ onBeforeUnmount(() => {
     align-items: center;
     justify-content: space-between;
     font-size: 0.875rem;
+    z-index: 1;
   }
 
   .request-row {
     background-color: #ffffff;
+
   }
   .request-row.alt-row {
     background-color: #f3f3f3;

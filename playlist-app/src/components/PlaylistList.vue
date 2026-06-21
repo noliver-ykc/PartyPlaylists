@@ -20,7 +20,7 @@
             </p>
             <h2>{{ playlist.title }}</h2>
             <p class="close-date">
-              Requests Close {{ formatDate(playlist.close_date) }}
+              Requests Close {{ formatDisplayDate(playlist.close_date) }}
             </p>
             <img
               :src="playlist.cover_image_url"
@@ -40,13 +40,13 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { supabase } from '@/lib/supabase'
+import { formatDisplayDate } from '@/lib/date'
 import RecentlyAddedJams from '@/components/RecentlyAddedJams.vue'
+import type { PlaylistSummary } from '@/types/models'
 
-
-const playlists = ref<any[]>([])
+const playlists = ref<PlaylistSummary[]>([])
 const router = useRouter()
 const loading = ref(true)
-
 
 const fetchPlaylists = async () => {
   const { data, error } = await supabase
@@ -54,18 +54,13 @@ const fetchPlaylists = async () => {
     .select('*')
     .order('created_at', { ascending: false })
 
-  if (!error) {
-    playlists.value = data
+  if (error) {
+    console.error('Failed to fetch playlists', error)
+    playlists.value = []
+    return
   }
-}
 
-const formatDate = (isoString: string): string => {
-  const date = new Date(isoString)
-  return date.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  })
+  playlists.value = (data ?? []) as PlaylistSummary[]
 }
 
 const goToPlaylist = (id: string) => {

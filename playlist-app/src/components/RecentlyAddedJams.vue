@@ -8,12 +8,8 @@
     <h3>Recently Added Jams</h3>
     <ul class="song-list">
       <li v-for="song in songRequests" :key="song.id" class="song-entry">
-        <div
-          class="song-row"
-          @mouseenter="hoveredId = song.id"
-          @mouseleave="hoveredId = null"
-        >
-          <img :src="song.album_cover_url" class="thumb" alt="Album cover" />
+        <div class="song-row">
+          <img :src="song.album_cover_url ?? ''" class="thumb" alt="Album cover" />
           <div class="meta">
             <strong>{{ song.title }}</strong><br />
             <small>{{ song.artist }}</small>
@@ -27,12 +23,11 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { supabase } from '@/lib/supabase'
+import type { SongRequest } from '@/types/models'
 
-const songRequests = ref<any[]>([])
-const hoveredId = ref<string | null>(null)
+const songRequests = ref<SongRequest[]>([])
 const limit = ref(12)
 const loading = ref(true)
-
 
 const fetchSongs = async () => {
   const { data, error } = await supabase
@@ -41,14 +36,18 @@ const fetchSongs = async () => {
     .order('created_at', { ascending: false })
     .limit(limit.value)
 
-  if (!error) {
-    songRequests.value = data
+  if (error) {
+    console.error('Failed to fetch recently added jams', error)
+    songRequests.value = []
+    return
   }
+
+  songRequests.value = (data ?? []) as SongRequest[]
 }
 
-const updateLimit = () => {
+const updateLimit = async () => {
   limit.value = window.innerWidth < 768 ? 6 : 12
-  fetchSongs()
+  await fetchSongs()
 }
 
 onMounted(async () => {
