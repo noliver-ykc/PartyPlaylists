@@ -51,7 +51,7 @@
         <img :src="track.album.images[2]?.url" class="search-result-art" alt="Album Art" />
         <div class="search-result-text">
           <p>{{ track.name }}</p>
-          <small class="song-details-ui">{{ track.artists.map((a: Artist) => a.name).join(', ') }}</small>
+          <small class="song-details-ui">{{ track.artists.map((artist) => artist.name).join(', ') }}</small>
         </div>
         <button @click="submitRequest(track)" class="add-song-btn">
           <img src="/icons/add-song-button.svg" alt="Add Song" />
@@ -65,14 +65,16 @@
 import { ref } from 'vue'
 import { supabase } from '@/lib/supabase'
 import { getSpotifyAccessToken } from '@/lib/spotify'
+import type { SpotifyTrack } from '@/types/models'
 
-const emit = defineEmits(['request-submitted', 'request-started', 'request-ended'])
+const emit = defineEmits<{
+  (event: 'request-submitted'): void
+}>()
 
 const requestedBy = ref('')
 const showNameError = ref(false)
 const searchQuery = ref('')
-const searchResults = ref<any[]>([])
-type Artist = { name: string }
+const searchResults = ref<SpotifyTrack[]>([])
 
 const props = defineProps<{
   playlistId: string
@@ -96,7 +98,7 @@ const handleSearch = async () => {
   )
 
   const data = await res.json()
-  searchResults.value = data.tracks?.items || []
+  searchResults.value = (data.tracks?.items ?? []) as SpotifyTrack[]
 }
 
 const clearSearch = () => {
@@ -116,14 +118,13 @@ const getAppleMusicUrl = async (spotifyUrl: string): Promise<string | null> => {
 }
 
 const submitting = ref(false)
-const submitRequest = async (track: any) => {
+const submitRequest = async (track: SpotifyTrack) => {
   if (!requestedBy.value.trim()) {
     showNameError.value = true
     return
   }
 
   showNameError.value = false
-  emit('request-started')
   submitting.value = true
 
   const appleMusicUrl = await getAppleMusicUrl(track.external_urls.spotify)
@@ -132,7 +133,7 @@ const submitRequest = async (track: any) => {
     {
       playlist_id: props.playlistId,
       title: track.name,
-      artist: track.artists.map((a: any) => a.name).join(', '),
+      artist: track.artists.map((artist) => artist.name).join(', '),
       spotify_url: track.external_urls.spotify,
       apple_url: appleMusicUrl,
       requested_by: requestedBy.value,
@@ -141,9 +142,7 @@ const submitRequest = async (track: any) => {
       status: 'requested'
     }
   ])
-
   submitting.value = false
-  emit('request-ended')
 
   if (error) {
     alert('Failed to submit request: ' + error.message)

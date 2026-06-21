@@ -5,6 +5,10 @@ let accessToken: string | null = null
 let tokenExpiresAt: number = 0
 
 export async function getSpotifyAccessToken(): Promise<string> {
+  if (!clientId || !clientSecret) {
+    throw new Error('Missing Spotify client credentials')
+  }
+
   const now = Date.now()
 
   if (accessToken && tokenExpiresAt > now) {
@@ -23,6 +27,10 @@ export async function getSpotifyAccessToken(): Promise<string> {
     body: 'grant_type=client_credentials',
   })
 
+  if (!res.ok) {
+    throw new Error(`Spotify token request failed: ${res.status} ${res.statusText}`)
+  }
+
   const data = await res.json()
 
   accessToken = data.access_token
@@ -32,5 +40,4 @@ export async function getSpotifyAccessToken(): Promise<string> {
     throw new Error('Failed to retrieve Spotify access token')
   }
   return accessToken
-
 }
