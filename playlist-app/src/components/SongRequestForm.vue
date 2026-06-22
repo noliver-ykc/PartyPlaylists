@@ -109,13 +109,26 @@ const clearSearch = () => {
 const getAppleMusicUrl = async (spotifyUrl: string): Promise<string | null> => {
   try {
     const res = await fetch(`https://api.song.link/v1-alpha.1/links?url=${encodeURIComponent(spotifyUrl)}`)
+    
+    if (!res.ok) {
+      console.warn(`Odesli API error: ${res.status} ${res.statusText}`)
+      return null
+    }
+    
     const data = await res.json()
-    return data.linksByPlatform?.appleMusic?.url || null
+    const appleMusicUrl = data.linksByPlatform?.appleMusic?.url || null
+    
+    if (!appleMusicUrl) {
+      console.warn('No Apple Music link found for Spotify URL:', spotifyUrl, 'Available platforms:', Object.keys(data.linksByPlatform || {}))
+    }
+    
+    return appleMusicUrl
   } catch (e) {
-    console.error('Failed to fetch Apple Music link', e)
+    console.error('Failed to fetch Apple Music link:', e)
     return null
   }
 }
+
 
 const submitting = ref(false)
 const submitRequest = async (track: SpotifyTrack) => {

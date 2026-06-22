@@ -283,7 +283,7 @@ onBeforeUnmount(() => {
 .popup-menu {
   position: absolute;
   right: 0;
-  background: purple; /* ensure it’s solid */
+  background: white;
   border: 1px solid #ccc;
   border-radius: 6px;
   padding: 0.5rem;
