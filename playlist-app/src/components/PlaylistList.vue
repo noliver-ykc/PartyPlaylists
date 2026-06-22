@@ -4,9 +4,12 @@
       Loading<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span>
     </div>
   </div>
-  <div v-else >
+  <div v-else>
     <div class="home-page">
-      <h1>Playlists</h1>
+      <div class="header-row">
+        <h1>Playlists</h1>
+        <button class="new-playlist-btn" @click="handleNewPlaylist">+ New Playlist</button>
+      </div>
       <div class="playlist-scroll-container">
         <div class="playlist-grid">
           <div
@@ -31,9 +34,15 @@
           </div>
         </div>
       </div>
-    <RecentlyAddedJams />
+      <RecentlyAddedJams />
     </div>
   </div>
+
+  <AdminLoginModal
+    v-if="showLoginModal"
+    @close="showLoginModal = false"
+    @success="onAdminSuccess"
+  />
 </template>
 
 <script setup lang="ts">
@@ -42,11 +51,15 @@ import { useRouter } from 'vue-router'
 import { supabase } from '@/lib/supabase'
 import { formatDisplayDate } from '@/lib/date'
 import RecentlyAddedJams from '@/components/RecentlyAddedJams.vue'
+import AdminLoginModal from '@/components/AdminLoginModal.vue'
+import { useAdmin } from '@/composables/useAdmin'
 import type { PlaylistSummary } from '@/types/models'
 
 const playlists = ref<PlaylistSummary[]>([])
 const router = useRouter()
 const loading = ref(true)
+const showLoginModal = ref(false)
+const { isAdmin } = useAdmin()
 
 const fetchPlaylists = async () => {
   const { data, error } = await supabase
@@ -67,11 +80,23 @@ const goToPlaylist = (id: string) => {
   router.push(`/playlist/${id}`)
 }
 
+const handleNewPlaylist = () => {
+  if (isAdmin.value) {
+    router.push('/create-playlist')
+  } else {
+    showLoginModal.value = true
+  }
+}
+
+const onAdminSuccess = () => {
+  showLoginModal.value = false
+  router.push('/create-playlist')
+}
+
 onMounted(async () => {
   await fetchPlaylists()
   loading.value = false
 })
-
 </script>
 
 <style scoped>
@@ -79,11 +104,32 @@ onMounted(async () => {
   padding: 2rem;
 }
 
-h1 {
-  /* font-size: 2.5rem;
-  margin-bottom: 2.7rem; */
-  text-align: left;
+.header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   margin: 0 0 1rem 0;
+}
+
+h1 {
+  text-align: left;
+  margin: 0;
+}
+
+.new-playlist-btn {
+  background: #6c63ff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.new-playlist-btn:hover {
+  background: #5a52d5;
 }
 
 .playlist-scroll-container {
@@ -102,14 +148,13 @@ h1 {
 .playlist-card {
   scroll-snap-align: start;
   flex: 0 0 auto;
-  width: 340px;
   border-radius: 10px;
   transition: transform 0.2s;
   cursor: pointer;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  width: 45vw; /* Makes 2 full cards and 1 partial on wider screens */
+  width: 45vw;
   max-width: 500px;
   min-width: 350px;
 }
@@ -141,9 +186,10 @@ h1 {
 
 .playlist-card h2 {
   font-size: 1.1rem;
-  margin: 0 0;
+  margin: 0;
   text-align: left;
 }
+
 .playlist-card p {
   margin: 0;
   padding: 0;
@@ -156,25 +202,24 @@ h1 {
   color: #999;
 }
 
-/* Mobile adjustments */
 @media (max-width: 768px) {
-  .playlist-card {
-    width: 75vw;
-  }
   .home-page {
-  padding: 0;
+    padding: 0;
   }
+
+  .header-row {
+    padding: 1rem 1rem 0;
+  }
+
   .playlist-card {
-    width: 45vw; /* Makes 2 full cards and 1 partial on wider screens */
+    width: 45vw;
     max-width: 310px;
     min-width: 280px;
   }
+
   h1 {
     font-size: 2.5rem;
-    margin: 1rem 0;
-    text-align: left;
+    margin: 0;
   }
-
 }
-
 </style>
